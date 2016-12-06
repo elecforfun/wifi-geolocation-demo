@@ -1,19 +1,10 @@
 {
-  "event": "wifi_scan",
-  "mydevices": true,
-  "url": "https://www.googleapis.com/geolocation/v1/geolocate?key=YOUR_KEY_HERE",
-  "requestType": "POST",
-  "responseTemplate": "{{location.lat}},{{location.lng}},{{accuracy}}",
-  "json": {
-    "wifiAccessPoints": [
-      { "signalStrength": "{{list.0.s}}", "macAddress": "{{list.0.m}}" },
-      { "signalStrength": "{{list.1.s}}", "macAddress": "{{list.1.m}}" },
-      { "signalStrength": "{{list.2.s}}", "macAddress": "{{list.2.m}}" },
-      { "signalStrength": "{{list.3.s}}", "macAddress": "{{list.3.m}}" },
-      { "signalStrength": "{{list.4.s}}", "macAddress": "{{list.4.m}}" }
-    ]
-  },
-  "noDefaults": true,
-  "rejectUnauthorized": true
+  "considerIp": "false",
+  "wifiAccessPoints": [
+      { "macAddress": "{{list.0.m}}","signalStrength": "{{list.0.s}}","signalToNoiseRatio": 0},
+      { "macAddress": "{{list.1.m}}","signalStrength": "{{list.1.s}}","signalToNoiseRatio": 0},
+      { "macAddress": "{{list.2.m}}","signalStrength": "{{list.2.s}}","signalToNoiseRatio": 0},
+      { "macAddress": "{{list.3.m}}","signalStrength": "{{list.3.s}}","signalToNoiseRatio": 0},
+      { "macAddress": "{{list.4.m}}","signalStrength": "{{list.4.s}}","signalToNoiseRatio": 0}
+  ]
 }
-
