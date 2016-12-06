@@ -1,4 +1,4 @@
-#define UPDATE_FREQUENCY 30000
+#define UPDATE_FREQUENCY 60000 
 
 unsigned int lastPublish;
 
@@ -75,15 +75,23 @@ void onLocationReceived(const char *event, const char *data) {
     
     Serial.println("got location back " + String(data));
     
+    String str = String(data);
+    String one, two, three;
+    //char one[32], two[32], three[32];
     
-    char one[32], two[32], three[32];
-    float latitude, longitude, altitude;
-    //sscanf(someString, "%f,%f,%f", &latitude, &longitude, &altitude);
-    sscanf(data, "%[^,],%[^,],%[^,]", one, two, three);
-    
+    double latitude, longitude, accuracy;
+    //sscanf(data, "%*s:%*s:%d,%*s:%d,%*s:%d", &latitude, &longitude, &accuracy);
+    //sscanf(data, "%[^,],%[^,],%[^,]", one, two, three);
+    one = tryExtractString(0, str, "lat\":", ",");
+    two = tryExtractString(0, str, "lng\":", "}");
+    three = tryExtractString(0, str, "accuracy\":", "}");
+/*    Serial.println(String(one));
+    Serial.println(String(two));
+    Serial.println(String(three));
+*/    
     latitude = String(one).toFloat();
     longitude = String(two).toFloat();
-    altitude = String(three).toFloat();
+    accuracy = String(three).toFloat();
     
     if (latitude ==  0) {
         Serial.println("nevermind");
@@ -91,18 +99,39 @@ void onLocationReceived(const char *event, const char *data) {
     }
     
     
-    Serial.println(String::format("Parsed into %f, %f, %f ", latitude, longitude, altitude));
+    Serial.println(String::format("Parsed into %f, %f, %f ", latitude, longitude, accuracy));
     Serial.println(String::format("You're on a map! https://www.google.com/maps/place/%f,%f", latitude, longitude));
     
     String dataJson = String("{")
         + "\"c_lat\":" + String::format("%f", latitude)
         + ",\"c_lng\":" + String::format("%f", longitude)
-        + ",\"c_unc\":" + String::format("%f", altitude)
+        + ",\"c_unc\":" + String::format("%f", accuracy)
         + "}";
         
     Particle.publish("trk/loc", dataJson, 60, PRIVATE);
 }
 
+String tryExtractString(int matchNum, String str, const char* start, const char* end) {
+    if (str == NULL) {
+        return NULL;
+    }
+
+    int count = 0;
+    int lastIdx = 0;
+
+    while (count <= matchNum) {
+        int idx = str.indexOf(start, lastIdx);
+
+        int endIdx = str.indexOf(end, lastIdx + idx + strlen(start));
+
+        lastIdx = endIdx;
+
+        if (count == matchNum) {
+            return str.substring(idx + strlen(start), endIdx);
+        }
+        count++;
+    }
+}
 
 // For getting our location back
 //
@@ -136,5 +165,4 @@ void onLocationReceived(const char *event, const char *data) {
 //             }
 //         ]
 // }]}
-
 
